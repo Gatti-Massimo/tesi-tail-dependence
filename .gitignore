@@ -1,0 +1,12 @@
+# Paper e documenti sorgente conservati solo localmente
+*.pdf
+*.PDF
+
+# File generati da macOS e R
+.DS_Store
+.Rhistory
+
+# File temporanei
+tmp/
+*.tmp
+*~
