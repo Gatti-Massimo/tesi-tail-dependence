@@ -8,7 +8,8 @@ La copia ufficiale del progetto è questo repository GitHub. RStudio, Codex ed e
 
 ## Struttura
 
-- `Appunti_tail_dependence.md`: appunti progressivi sui paper e sull'argomento;
+- `literature/papers/`: PDF forniti dal relatore, conservati solo localmente;
+- `notes/Appunti_tail_dependence.md`: appunti progressivi sui paper e sull'argomento;
 - `R/`: funzioni R riutilizzabili;
 - `analysis/`: script di analisi eseguiti in ordine numerico;
 - `data/`: istruzioni e metadati relativi ai dati;
@@ -41,4 +42,4 @@ Il file `renv.lock` dovrà essere incluso nel commit insieme al codice che richi
 
 ## Tesi LaTeX
 
-Il file principale è `thesis/main.tex`. La struttura attuale è volutamente minimale e sarà adattata al template ufficiale dell'università non appena disponibile.
+Il file principale è `thesis/Tesi_tail_dependence.tex`. Il primo capitolo, `thesis/chapters/01-quadro-della-letteratura.tex`, introduce e collega i tre testi assegnati. La struttura sarà adattata al template ufficiale dell'università non appena disponibile.

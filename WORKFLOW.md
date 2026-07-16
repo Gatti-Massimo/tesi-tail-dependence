@@ -21,7 +21,7 @@ Prima di concludere:
 
 1. salvare tutti i file;
 2. rieseguire gli script modificati da una sessione pulita;
-3. compilare `thesis/main.tex` se sono cambiati file LaTeX;
+3. compilare `thesis/Tesi_tail_dependence.tex` se sono cambiati file LaTeX;
 4. esaminare il diff;
 5. creare un commit con messaggio informativo;
 6. eseguire `Push`.
