@@ -1,0 +1,5 @@
+# tipo: descrizione breve e specifica
+#
+# Tipi: docs, analysis, feat, fix, data, refactor, chore, results
+# Usa l'imperativo, niente punto finale, idealmente entro 72 caratteri.
+# Se necessario, spiega qui sotto motivazione, scelte e limiti.

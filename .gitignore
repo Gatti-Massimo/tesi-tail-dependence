@@ -5,8 +5,29 @@
 # File generati da macOS e R
 .DS_Store
 .Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Libreria locale renv (il lockfile resta versionato)
+renv/library/
+renv/staging/
+renv/local/
 
 # File temporanei
 tmp/
 *.tmp
 *~
+
+# File ausiliari prodotti dalla compilazione LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
