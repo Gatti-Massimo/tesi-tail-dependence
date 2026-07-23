@@ -1,0 +1,526 @@
+\documentclass[11pt,a4paper]{article}
+
+% Appunti personali di lettura: non sono un testo da presentare.
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage[a4paper,margin=2.45cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,patterns}
+\usepackage{hyperref}
+
+\title{Appunti di lettura\\\large Hua e Joe (2011), ``Tail order and intermediate tail dependence''}
+\author{Appunti personali di Massimo}
+\date{}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\one}{\boldsymbol{1}}
+\newcommand{\Idea}{\paragraph{Idea.}}
+\newcommand{\Esempio}{\paragraph{Esempio.}}
+\newcommand{\Ricorda}{\paragraph{Da ricordare.}}
+\newcommand{\Salta}{\paragraph{Cosa puoi saltare per ora.}}
+
+\begin{document}
+\maketitle
+
+\paragraph{Come leggere questi appunti.}
+Questa è una guida personale al secondo paper, da leggere dopo Schmidt. Non è
+un testo da consegnare al relatore: è un percorso per arrivare alla riunione
+sapendo raccontare il problema, capire i simboli principali e riconoscere la
+parte più tecnica. Le figure sono schematiche, non dati reali. Quando scrivo
+``$\lambda$ di Schmidt'' intendo il tail-dependence coefficient (TDC); quando
+scrivo ``parametro $\lambda$ di Hua--Joe'' intendo invece il limite della
+funzione lentamente variabile, che è una notazione diversa.
+
+\section{Da Schmidt a Hua--Joe: quando $\lambda=0$ non basta}
+
+In Schmidt la domanda di base è: se una variabile è già in una coda estrema,
+quanto è probabile che anche l'altra sia estrema? Il limite di questa
+probabilità è il TDC, per esempio $\lambda_L$ nella coda inferiore. Se il
+risultato è positivo, abbiamo dipendenza asintotica; se è zero, parliamo di
+indipendenza asintotica.
+
+Il problema è che ``zero'' raccoglie moltissimi casi. Supponiamo che, per una
+soglia rappresentata da $u\downarrow0$, due modelli abbiano probabilità
+congiunte circa $u^{3/2}$ e $u^2$. Entrambe tendono a zero, quindi entrambe
+hanno TDC nullo. Ma per $u=0.01$ otteniamo
+\[
+  u^{3/2}=10^{-3},\qquad u^2=10^{-4}.
+\]
+La prima probabilità è dieci volte più grande: in un problema di rischio non è
+una differenza trascurabile. A soglie finite la probabilità è dunque non nulla;
+la parola ``asintotica'' riguarda soltanto ciò che succede quando la soglia
+viene spinta infinitamente lontano.
+
+\Idea Hua e Joe propongono di conservare l'informazione sulla velocità con cui
+la probabilità tende a zero. Chiamano questa velocità \emph{tail order} e
+chiamano \emph{intermediate tail dependence} la regione tra dipendenza
+asintotica e indipendenza completa.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.85cm,font=\small]
+  \draw[->] (0,0)--(8.2,0) node[right] {soglia verso l'estremo};
+  \draw[->] (0,0)--(0,4.1) node[above] {probabilità congiunta};
+  \draw[blue!70,thick] (0.3,3.4) .. controls (1.5,2.9) and (3.2,2.0) .. (7.8,0.45);
+  \draw[red!70,thick] (0.3,3.4) .. controls (1.5,1.6) and (3.2,0.65) .. (7.8,0.05);
+  \node[blue!70,align=left] at (5.2,2.0) {decadimento più lento\\ordine più piccolo};
+  \node[red!70,align=left] at (5.1,0.65) {decadimento più rapido\\ordine più grande};
+  \node[align=center] at (3.9,-0.75) {entrambe tendono a $0$:\\il solo TDC non le distingue};
+\end{tikzpicture}
+\caption{Due probabilità congiunte possono avere lo stesso limite nullo ma velocità diverse. Schema concettuale, non dati reali.}
+\label{fig:decadimenti}
+\end{figure}
+
+\Ricorda Un ordine più piccolo significa, in generale, una discesa più lenta e
+quindi più persistenza degli estremi. Il paper controlla anche il fattore
+lentamente variabile che accompagna la potenza: l'esponente è il primo livello
+di informazione, non sempre l'ultimo.
+
+\section{Prima la storia dei dati: copula, marginali e diagonale}
+
+Immagina una coppia di rendimenti giornalieri, ad esempio
+$(r_{\mathrm{BMW}},r_{\mathrm{DB}})$. Una singola osservazione bivariata è
+proprio questa coppia di numeri. La marginale BMW è invece il comportamento di
+$r_{\mathrm{BMW}}$ preso da solo: la sua scala, la sua media e la sua coda. La
+seconda marginale descrive Deutsche Bank. La copula non decide le unità di
+misura: racconta come i due percentili si combinano.
+
+Se BMW è al percentile $0.98$ e Deutsche Bank al percentile $0.97$, la coppia
+si trova vicino all'angolo superiore destro del quadrato dei percentili,
+indipendentemente dal fatto che i rendimenti abbiano volatilità diverse. È
+questo posizionamento relativo che serve per le code.
+
+Per marginali continue, la rappresentazione di Sklar è
+\begin{equation}
+ F(x_1,\ldots,x_d)=C\bigl(F_1(x_1),\ldots,F_d(x_d)\bigr),
+ \label{eq:sklar}
+\end{equation}
+dove $d$ è il numero di componenti e $C$ è la copula. Se poniamo
+$U_i=F_i(X_i)$, ogni $U_i$ è uniforme in $[0,1]$: abbiamo trasformato dati con
+scale diverse in percentili confrontabili.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[font=\scriptsize,>=Latex]
+  \begin{scope}[xshift=0cm]
+    \draw[->] (0,0)--(3.2,0) node[right] {BMW};
+    \draw[->] (0,0)--(0,3.2) node[above] {DB};
+    \foreach \x/\y in {0.5/0.7,0.8/0.5,1.0/1.2,1.3/1.4,1.5/1.1,1.8/2.0,2.1/1.9,2.4/2.5,2.8/2.3}{\fill[blue!65] (\x,\y) circle (1.5pt);}
+    \node[align=center] at (1.5,-0.6) {spazio originale\\marginali diverse};
+  \end{scope}
+  \draw[->,thick] (3.5,1.5)--(4.5,1.5) node[midway,above] {percentili};
+  \begin{scope}[xshift=5cm]
+    \draw[->] (0,0)--(3.2,0) node[right] {$u=F_1(x_1)$};
+    \draw[->] (0,0)--(0,3.2) node[above] {$v=F_2(x_2)$};
+    \foreach \x/\y in {0.5/0.7,0.8/0.5,1.0/1.2,1.3/1.4,1.5/1.1,1.8/2.0,2.1/1.9,2.4/2.5,2.8/2.3}{\fill[blue!65] ({\x/3},{\y/3}) circle (1.5pt);}
+    \node[align=center] at (1.5,-0.6) {percentili\\in $[0,1]^2$};
+  \end{scope}
+  \draw[->,thick] (8.5,1.5)--(9.5,1.5) node[midway,above] {copula};
+  \begin{scope}[xshift=10cm]
+    \draw[->] (0,0)--(3.2,0) node[right] {$u$};
+    \draw[->] (0,0)--(0,3.2) node[above] {$v$};
+    \draw[gray] (0,0) rectangle (3,3);
+    \draw[dashed] (0,0)--(3,3);
+    \foreach \x/\y in {0.5/0.7,0.8/0.5,1.0/1.2,1.3/1.4,1.5/1.1,1.8/2.0,2.1/1.9,2.4/2.5,2.8/2.3}{\fill[red!65] ({\x/3},{\y/3}) circle (1.5pt);}
+    \node[align=center] at (1.5,-0.6) {legame\\tra percentili};
+  \end{scope}
+\end{tikzpicture}
+\caption{Dal dato bivariato alla copula: prima si separano le marginali, poi si osserva come i percentili si combinano. Schema didattico.}
+\label{fig:copula-pipeline}
+\end{figure}
+
+Per la lower tail guardiamo la diagonale vicino all'origine,
+$C(u\one)=C(u,\ldots,u)$, con $u\downarrow0$. Per la upper tail si usa la
+\emph{survival copula}:
+\[
+ \overline C(u_1,\ldots,u_d)=\Prob(U_1>u_1,\ldots,U_d>u_d),
+\]
+e la diagonale $\overline C((1-u)\one)$ con $u\downarrow0$. In dimensione due
+$\overline C(u,v)=1-u-v+C(u,v)$; in dimensione maggiore interviene la formula
+di inclusione--esclusione sulle copule marginali.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=3.2cm,y=3.2cm,font=\small]
+  \draw[->] (0,0)--(1.08,0) node[right] {$u$};
+  \draw[->] (0,0)--(0,1.08) node[above] {$v$};
+  \draw[gray] (0,0) rectangle (1,1);
+  \draw[dashed,thick] (0,0)--(1,1) node[above right] {diagonale $u=v$};
+  \fill[orange!25] (0,0) rectangle (0.27,0.27);
+  \fill[blue!20] (0.73,0.73) rectangle (1,1);
+  \node[align=center] at (0.14,0.14) {lower\\$C(u,u)$};
+  \node[align=center] at (0.86,0.86) {upper\\$\overline C(1-u,1-u)$};
+  \node[align=center] at (0.5,-0.22) {quadrato dei percentili};
+\end{tikzpicture}
+\caption{Le due regioni che si confrontano lungo la diagonale della copula. Schema concettuale, non dati reali.}
+\label{fig:copula-diagonal}
+\end{figure}
+
+\Salta per ora le formule complete di inclusione--esclusione: è sufficiente
+ricordare che la survival copula misura probabilità congiunte di superamento,
+mentre $C$ misura probabilità congiunte di non superamento.
+
+\section{Tail order $\kappa$: prima l'idea, poi la formula}
+
+Hua e Joe descrivono una diagonale come una potenza moltiplicata per una
+correzione lenta:
+\begin{equation}
+ C(u\one)\sim u^{\kappa_L(C)}\ell_L(u),
+ \qquad u\downarrow0,
+ \label{eq:kappa-lower}
+\end{equation}
+e, per la coda superiore,
+\begin{equation}
+ \overline C((1-u)\one)\sim u^{\kappa_U(C)}\ell_U(u),
+ \qquad u\downarrow0.
+ \label{eq:kappa-upper}
+\end{equation}
+
+Leggiamo la prima formula lentamente. $u$ è la distanza dalla coda; $u^\kappa$
+è la velocità principale; $\ell(u)$ è una funzione lentamente variabile, per
+esempio una potenza di $-\log u$. Il simbolo $\sim$ significa che il rapporto
+tra i due membri tende a $1$. Il paper giustifica questa scrittura con la
+teoria della variazione regolare:
+\[
+ \lim_{x\to\infty}\frac{g(tx)}{g(x)}=t^\alpha,qquad t>0.
+\]
+
+\begin{center}
+\begin{tabular}{p{2.7cm}p{3.5cm}p{5.1cm}}
+\toprule
+Ordine & Situazione & Come dirlo a voce\\
+\midrule
+$\kappa=1$ & dipendenza di coda, se il fattore lento tende a una costante positiva & La probabilità congiunta è dell'ordine di $u$; qui compare il TDC positivo.\\
+$1<\kappa<d$ & intermediate tail dependence, sotto dipendenza positiva & La probabilità va a zero, ma più lentamente dell'indipendenza completa.\\
+$\kappa=d$ & riferimento di indipendenza & La diagonale ha l'ordine di $u^d$; con la copula indipendente è proprio $u^d$.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Due lambda diverse.}
+In Schmidt $\lambda_L$ e $\lambda_U$ sono limiti di probabilità condizionate:
+sono i TDC. In Hua--Joe, invece, il simbolo $\lambda_L(C)$ o
+$\lambda_U(C)$ viene usato per il limite di $\ell(u)$, quando esiste. Se
+$\kappa=1$ e $\ell(u)\to h>0$, questo $h$ coincide con il TDC nella
+convenzione della coda considerata. Se $\kappa>1$, il TDC è zero anche se
+guardare $\kappa$ è informativo. Non bisogna quindi scambiare i due ruoli.
+
+\Ricorda Più piccolo è $\kappa$, più lento è il decadimento di $u^\kappa$ e
+maggiore è la persistenza della dipendenza estrema. Una copula non può avere
+$\kappa<1$ nel caso ordinario perché $C(u\one)\leq u$. Per una copula
+indipendente in dimensione $d$, invece, $\kappa=d$.
+
+\Esempio In dimensione due e per $u=0.01$:
+\[
+ u^1=10^{-2},\qquad u^{3/2}=10^{-3},\qquad u^2=10^{-4}.
+\]
+Il valore $3/2$ è davvero intermedio: non produce il limite positivo della
+dipendenza asintotica, ma non è neppure il decadimento rapido $u^2$.
+
+Il paper collega questa notazione a Ledford--Tawn, che scrivono una probabilità
+congiunta come $\ell(r)r^{-1/\eta}$, con $1/2\leq\eta\leq1$. La relazione è
+$\kappa=1/\eta$. È un collegamento utile, ma non serve farne il centro della
+prima lettura.
+
+\section{Percorsi non diagonali: la tail order function}
+
+La diagonale confronta soglie uguali in tutte le componenti. Ma in pratica
+una variabile può essere estremamente lontana dalla propria media mentre
+un'altra è solo moderatamente estrema. Per questo gli autori assegnano pesi
+$w=(w_1,\ldots,w_d)$ e studiano
+\begin{equation}
+ b(w;C,\kappa)=\lim_{u\downarrow0}
+ \frac{C(uw_1,\ldots,uw_d)}{u^\kappa\ell(u)},
+ \label{eq:order-function}
+\end{equation}
+quando il limite esiste. La funzione upper $b^*$ sostituisce il numeratore con
+$\overline C(1-uw_1,\ldots,1-uw_d)$.
+
+\Idea $b(w)$ descrive la forma della dipendenza vicino all'angolo, non solo il
+numero letto sulla diagonale. Se prendiamo $w=\one$ torniamo alla definizione
+di $\kappa$. Gli autori mostrano anche l'omogeneità $b(tw)=t^\kappa b(w)$:
+spostare tutti i pesi nella stessa proporzione cambia la scala con l'ordine
+stesso.
+
+\Salta per ora le dimostrazioni e le derivate della funzione $b$. Il concetto
+da conservare è che due copule con lo stesso $\kappa$ possono ancora avere
+forme diverse lungo percorsi non diagonali.
+
+\section{La copula gaussiana: esempio di intermediate tail dependence}
+
+La copula gaussiana d-dimensionale è costruita trasformando i percentili in
+quantili normali e usando una matrice di correlazione $\Sigma$:
+\begin{equation}
+ C_d^\Phi(u_1,\ldots,u_d)=
+ \Phi_d\!\left(\Phi^{-1}(u_1),\ldots,\Phi^{-1}(u_d);\Sigma\right).
+ \label{eq:gaussian-copula}
+\end{equation}
+
+Nel caso bivariato con correlazione positiva $\rho$ gli autori ottengono
+\begin{equation}
+ \kappa=\frac{2}{1+\rho},
+ \qquad
+ \ell(u)=(-\log u)^{-\rho/(1+\rho)}.
+ \label{eq:gaussian-order}
+\end{equation}
+Se $\rho=0.5$, allora $\kappa=4/3$. La copula è ancora asintoticamente
+indipendente nel senso di Schmidt ($\lambda=0$), ma la correlazione positiva ha
+rallentato il decadimento rispetto a $\kappa=2$ dell'indipendenza. In
+dimensione $d$ con correlazione equicorrelata:
+\[
+ \kappa=\frac{d}{1+(d-1)\rho}.
+\]
+
+\paragraph{Come raccontarlo al relatore.}
+``Una gaussiana con correlazione positiva non crea un TDC positivo, però la
+probabilità di estremi congiunti diminuisce più lentamente. Quindi il TDC
+classico la mette nella casella indipendenza asintotica, mentre il tail order
+la colloca nella zona intermedia.'' Questa è esattamente l'informazione che
+Schmidt, da solo, non separava.
+
+\section{Archimedean copulas: il fattore latente prima dei simboli}
+
+Una copula archimedea può essere vista come un modello con un fattore comune
+non osservato. Condizionatamente a quel fattore, le componenti sono
+indipendenti; quando il fattore assume valori particolari, però, tutte le
+componenti vengono spinte verso lo stesso bordo. È un modo intuitivo per
+generare dipendenza.
+
+Matematicamente il paper usa la trasformata di Laplace di una variabile
+$Y\geq0$:
+\begin{equation}
+ C_\psi(u_1,\ldots,u_d)=
+ \psi\!\left(\psi^{-1}(u_1)+\cdots+\psi^{-1}(u_d)\right),
+ \qquad \psi(s)=\mathbb E[e^{-sY}].
+ \label{eq:arch-lt}
+\end{equation}
+
+Se la variabile latente ha una coda superiore pesante, c'è più probabilità di
+spingere simultaneamente le componenti verso il bordo superiore. Se ha molta
+densità vicino a zero, si rafforza la lower tail. Questa è la ragione per cui
+le copule archimedee possono essere asimmetriche tra le due code.
+
+\subsection{Il momento massimo e il tail order}
+Gli autori riassumono la pesantezza della coda di $Y$ con
+\begin{equation}
+ M_\psi=\sup\{m\geq0:\mathbb E(Y^m)<\infty\}.
+ \label{eq:max-moment}
+\end{equation}
+Un valore piccolo di $M_\psi$ indica che già potenze basse di $Y$ hanno
+momento infinito, quindi la coda è pesante. Se $k<M_\psi<k+1$, con
+$k\in\{1,\ldots,d-1\}$, la Proposizione 4 dà un ordine upper
+$\kappa_U=M_\psi$: è intermediate tail dependence. Se tutte le derivate
+necessarie di $\psi$ sono finite, l'ordine può arrivare a $d$; se
+$\psi'(0)=-\infty$ e $0<M_\psi<1$, l'ordine è $1$ e nel caso bivariato
+\begin{equation}
+ \lambda_U^{\text{(TDC)}}=2-2^{M_\psi}.
+ \label{eq:arch-upper-lambda}
+\end{equation}
+Qui ho scritto esplicitamente ``TDC'' per non confonderlo con il parametro
+$\lambda_U(C)=\lim\ell_U(u)$ della Definizione 2.
+
+\Salta per ora la dimostrazione con tutte le derivate della LT. Per la prima
+comprensione basta sapere che una caratteristica univariata della variabile
+latente determina l'ordine di una dipendenza multivariata.
+
+\subsection{Lower tail e velocità della LT}
+Per la coda inferiore il paper studia il comportamento di $\psi(s)$ quando
+$s\to\infty$, ad esempio
+\[
+ \psi(s)\sim a_1s^q\exp\{-a_2s^r\}.
+\]
+Quando $0<r<1$, l'ordine lower ottenuto è $\kappa_L=dr$; per $r=0$ l'ordine
+è $1$, per $r=1$ è $d$. La lettura intuitiva è che una discesa più lenta della
+LT per $s$ grande segnala più massa vicino a zero nella variabile latente e
+quindi più dipendenza nella lower tail.
+
+\section{La famiglia inverse-Gamma: un esempio di asimmetria progettata}
+
+Hua e Joe non si limitano a classificare famiglie già note: propongono una
+famiglia a un parametro per ottenere pattern di coda che Gaussiane, $t$ e
+molte archimedean standard non rappresentano bene. Se
+$X\sim\operatorname{Gamma}(\alpha,1)$ e $Y=X^{-1}$, la sua LT è
+\begin{equation}
+ \psi(s;\alpha)=\frac{2}{\Gamma(\alpha)}s^{\alpha/2}
+ K_\alpha(2\sqrt{s}),\qquad \alpha>0,
+ \label{eq:inverse-gamma-lt}
+\end{equation}
+dove $K_\alpha$ è la funzione di Bessel modificata del secondo tipo.
+
+Per $\alpha$ non intero, la Proposizione 7 dà
+\begin{equation}
+ \kappa_U=\max\{1,\min\{\alpha,d\}\},
+ \qquad \kappa_L=\sqrt d.
+ \label{eq:inverse-gamma-orders}
+\end{equation}
+In dimensione due, $\kappa_L=\sqrt2$ e
+$\kappa_U=\max\{1,\min\{\alpha,2\}\}$. Se $0<\alpha<\sqrt2$,
+$\kappa_U<\kappa_L$: l'upper order è più piccolo, quindi la upper tail è più
+persistente. Se $\alpha>\sqrt2$ accade il contrario. Numericamente, la
+concordanza centrale cresce verso la copula comonotona quando $\alpha$ scende
+a zero e tende all'indipendenza quando $\alpha$ cresce.
+
+\begin{center}
+\begin{tabular}{p{3.2cm}p{2.7cm}p{2.7cm}p{4.2cm}}
+\toprule
+Regione di $\alpha$ & $\kappa_U$ & $\kappa_L$ & Lettura in parole\\
+\midrule
+$\alpha\downarrow0$ & vicino a $1$ & $\sqrt d$ & upper tail molto persistente.\\
+$\alpha=\sqrt2$ in $d=2$ & $\sqrt2$ & $\sqrt2$ & soglia di simmetria degli ordini.\\
+$\alpha\to\infty$ & $d$ & $\sqrt d$ per ogni valore finito & la concordanza tende all'indipendenza; il limite centrale e il limite asintotico non vanno confusi.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Perché è utile.}
+La famiglia permette di cambiare il lato della distribuzione più persistente
+senza dover cambiare completamente la costruzione. È un esempio concreto del
+messaggio del paper: tail order e simmetria di riflessione possono essere
+progettati separatamente dalla dipendenza centrale.
+
+\section{Miscele max-infinitely divisible: combinare meccanismi}
+
+La seconda costruzione importante parte da una copula max-infinitely divisible
+$K$ e da una LT $\psi$:
+\begin{equation}
+ C(u_1,\ldots,u_d)=
+ \psi\!\left[-\log K\!\left(e^{-\psi^{-1}(u_1)},\ldots,
+ e^{-\psi^{-1}(u_d)}\right)\right].
+ \label{eq:maxid-mixture}
+\end{equation}
+
+La formula dice, in sostanza, che si inserisce una struttura $K$ dentro il
+meccanismo archimedeo della LT. Se $K$ porta già un certo ordine e $\psi$ ha
+una certa pesantezza, il risultato combina i due effetti. Le Proposizioni 8 e
+9 mostrano condizioni in cui l'ordine upper resta quello di $C_\psi$ oppure
+diventa un nuovo ordine intermedio determinato da entrambi.
+
+\Idea È come avere due manopole: una per il meccanismo di dipendenza della
+copula $K$, una per il comportamento della variabile latente. In dimensione
+due questo produce molte candidate utili come linking copulas; in dimensione
+maggiore le sole archimedean copulas sono exchangeable, quindi le vine copulas
+offrono un modo per assemblare blocchi bivariati più flessibili.
+
+\Salta per ora i coefficienti di inclusione--esclusione nelle Proposizioni 8--9.
+Il punto da ricordare è che le miscele permettono upper/lower tail diverse e
+una struttura più ricca di quella di una singola famiglia simmetrica.
+
+\section{Reflection symmetry: capire quale coda domina}
+
+Riflettere una copula significa sostituire $(U_1,\ldots,U_d)$ con
+$(1-U_1,\ldots,1-U_d)$. Se la copula resta uguale, c'è reflection symmetry.
+Se non resta uguale, confrontiamo gli ordini:
+\begin{itemize}[nosep]
+  \item $\kappa_L>\kappa_U$: l'upper tail ha ordine più piccolo e quindi
+  decresce più lentamente; l'asimmetria è verso l'upper tail;
+  \item $\kappa_L<\kappa_U$: la lower tail è più persistente;
+  \item $\kappa_L=\kappa_U$ non garantisce simmetria: i fattori $\ell$ o le
+  funzioni di ordine possono ancora essere diversi.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1.3cm,y=0.75cm,font=\small]
+  \draw[->] (0,0)--(5.9,0) node[right] {modello};
+  \draw[->] (0,0)--(0,3.8) node[above] {persistenza della coda};
+  \draw[gray!60,dashed] (0.2,1.0)--(5.6,1.0);
+  \node[gray,anchor=west] at (0.25,0.92) {indipendenza: $\kappa=d$};
+  \draw[blue!70,very thick] (0.5,3.0)--(2.0,2.4)--(3.5,1.7)--(5.3,1.0);
+  \draw[red!70,very thick] (0.5,2.0)--(2.0,2.0)--(3.5,1.5)--(5.3,1.0);
+  \node[blue!70,align=left] at (1.1,3.35) {ordine più piccolo:\\più persistenza};
+  \node[red!70,align=left] at (3.5,2.2) {ordine più grande:\\decadimento più rapido};
+  \node[align=center] at (2.9,-0.65) {$\kappa=1$ è la coda dipendente;\\$1<\kappa<d$ è la zona intermedia};
+\end{tikzpicture}
+\caption{Schema qualitativo della scala di tail order. Le ordinate non sono valori stimati.}
+\label{fig:classification}
+\end{figure}
+
+\section{Conclusione: cosa cambia nella mia mappa mentale}
+
+\subsection*{Schmidt e Hua--Joe in una frase ciascuno}
+Schmidt fornisce il primo linguaggio operativo: TDC, copule, stimatori e VaR.
+Hua--Joe prende la casella ``TDC uguale a zero'' e la apre: due modelli
+asintoticamente indipendenti possono avere velocità di decadimento molto
+diverse, e questa velocità può essere asimmetrica tra upper e lower tail.
+
+\subsection*{Cosa devo saper dire al relatore}
+Potrei dire: ``Il TDC dice se la probabilità condizionata estrema resta
+positiva. Se è zero, Hua--Joe guarda la probabilità congiunta e la scrive come
+$u^\kappa\ell(u)$. L'esponente $\kappa$ misura la velocità: $1$ è la coda
+dipendente, $d$ è l'indipendenza e i valori intermedi descrivono una
+dipendenza estrema che tende comunque a zero. La copula gaussiana con $\rho>0$
+è l'esempio semplice: TDC nullo ma ordine intermedio.''
+
+\subsection*{Cosa non devo ancora saper fare}
+Non devo ancora ricostruire le dimostrazioni con trasformate di Laplace,
+derivate di ordine elevato o funzioni di Bessel. Devo però sapere che quelle
+tecniche collegano una proprietà univariata della variabile latente alla coda
+della copula. Non devo neppure avere già scelto una famiglia per la tesi:
+questo paper serve prima a capire quali comportamenti sarebbe possibile
+rappresentare.
+
+\subsection*{Rilettura consigliata}
+Per un secondo passaggio leggerei le Definizioni 1--3 alle pp.~1455--1457,
+poi l'esempio gaussiano a p.~1456. Solo dopo tornerei alle Proposizioni 4--7
+(pp.~1460--1462), guardando soprattutto la direzione delle disuguaglianze e
+non ogni passaggio della prova. Infine leggerei le Proposizioni 8--9 a p.~1462
+per capire la motivazione delle miscele max-id.
+
+\subsection*{Parole chiave}
+tail order, intermediate tail dependence, TDC, $\lambda_L$, $\lambda_U$,
+$\kappa_L$, $\kappa_U$, variazione regolare, funzione lentamente variabile,
+diagonal section, survival copula, Archimedean copula, Laplace transform,
+maximal moment, inverse-Gamma, max-infinitely divisible, reflection symmetry,
+tail asymmetry, vine copula.
+
+\subsection*{Legenda finale della notazione e pronuncia}
+\begin{description}[leftmargin=3.5cm,style=nextline]
+  \item[$\lambda_L,\lambda_U$ in Schmidt] TDC lower e upper, cioè limiti di
+  probabilità condizionate. Lambda si legge ``lambda''.
+  \item[$\lambda_L(C),\lambda_U(C)$ in Hua--Joe] limiti del fattore lento
+  $\ell(u)$ nella Definizione 2; coincidono con il TDC solo nel caso
+  $\kappa=1$ e limite positivo.
+  \item[$\kappa_L,\kappa_U$] tail order, esponente della velocità; kappa è la
+  lettera greca $\kappa$ e si legge ``cappa''.
+  \item[$k$] indice intero usato nelle prove per individuare l'intervallo
+  $k<M_\psi<k+1$; è la lettera latina ``k'', non il parametro $\kappa$.
+  \item[$\theta,\alpha$] parametri di famiglie; in Hua--Joe $\alpha$ è il
+  parametro inverse-Gamma e $M_\psi=\alpha$ per quella famiglia.
+  \item[$\rho$] correlazione della copula gaussiana bivariata.
+  \item[$C,\overline C$] copula ordinaria e survival copula.
+  \item[$u,v$] livelli percentili in $[0,1]$; $u\downarrow0$ indica la lower
+  tail, mentre $1-u\uparrow1$ indica la upper tail.
+  \item[$\one$] vettore $(1,\ldots,1)$; $C(u\one)$ è la diagonale.
+  \item[$\ell(u)$] funzione lentamente variabile che corregge $u^\kappa$.
+  \item[$\lim$, $\sim$] limite e equivalenza asintotica, cioè rapporto tendente
+  a $1$.
+  \item[LT] trasformata di Laplace, $\psi(s)=\mathbb E[e^{-sY}]$.
+  \item[$M_\psi$] massimo ordine di momento finito della variabile positiva
+  $Y$ associata alla LT.
+\end{description}
+
+\subsection*{Domande per il relatore}
+\begin{description}[leftmargin=3.1cm,style=nextline]
+  \item[Concettuali] Nel nostro lavoro conviene usare $\kappa$ anche quando
+  il TDC di Schmidt è zero? Come distinguere intermediate tail dependence da
+  near independence? Quanto è importante il fattore lentamente variabile?
+  \item[Metodologiche] Esistono stimatori affidabili di $\kappa$ e $b(w)$ per
+  campioni finanziari realistici? Come scegliere tra copula gaussiana, $t$,
+  archimedea e vine quando le code sono asimmetriche?
+  \item[Empiriche] Come verificare la reflection asymmetry nei rendimenti? Ha
+  senso stimare separatamente lower e upper tail nel VaR invece di usare una
+  copula $t$ simmetrica?
+  \item[Collegamento ai paper] Schmidt offre il quadro operativo TDC--stima--
+  VaR; Hua--Joe approfondisce la classificazione quando il TDC è nullo.
+  Durante et al. sembra concentrarsi sulla diagonal section e sugli ordini di
+  coda in una direzione più geometrica. Chiedere se il relatore vede questi
+  lavori come una sequenza naturale o come approcci alternativi.
+\end{description}
+
+\end{document}
