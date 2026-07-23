@@ -1,9 +1,17 @@
 # Paper e documenti sorgente conservati solo localmente
+papers/
 *.pdf
 *.PDF
 
 # Appunti personali mantenuti solo in locale
 appunti/
+
+# Configurazione locale di Codex e istruzioni di lavoro
+.codex/
+AGENTS.md
+
+# Impostazioni locali di RStudio
+*.Rproj
 
 # File generati da macOS e R
 .DS_Store
