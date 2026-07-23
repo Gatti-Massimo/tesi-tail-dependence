@@ -2,6 +2,9 @@
 *.pdf
 *.PDF
 
+# Appunti personali mantenuti solo in locale
+appunti/
+
 # File generati da macOS e R
 .DS_Store
 .Rhistory
