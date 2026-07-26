@@ -30,6 +30,9 @@ tmp/
 *.tmp
 *~
 
+# Grafici generati dal codice R
+grafici/
+
 # File ausiliari prodotti dalla compilazione LaTeX
 *.aux
 *.bbl
