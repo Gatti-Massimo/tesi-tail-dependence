@@ -1,47 +1,17 @@
-# Paper e documenti sorgente conservati solo localmente
-papers/
-*.pdf
-*.PDF
+# Risultati generati e materiali di lavoro locali
+/output/
+/Grafici SCELTI/
+/[Pp]apers/
 
-# Appunti personali mantenuti solo in locale
-appunti/
-
-# Configurazione locale di Codex e istruzioni di lavoro
-.codex/
-AGENTS.md
-
-# Impostazioni locali di RStudio
-*.Rproj
-
-# File generati da macOS e R
-.DS_Store
-.Rhistory
+# Sessioni R e impostazioni di RStudio
 .RData
+.Rhistory
 .Ruserdata
 .Rproj.user/
+*.Rproj
+Rplots.pdf
 
-# Libreria locale renv (il lockfile resta versionato)
-renv/library/
-renv/staging/
-renv/local/
-
-# File temporanei
-tmp/
-*.tmp
-*~
-
-# Grafici generati dal codice R
-grafici/
-
-# File ausiliari prodotti dalla compilazione LaTeX
-*.aux
-*.bbl
-*.bcf
-*.blg
-*.fdb_latexmk
-*.fls
-*.log
-*.out
-*.run.xml
-*.synctex.gz
-*.toc
+# File di sistema di macOS e Windows
+.DS_Store
+Thumbs.db
+desktop.ini
