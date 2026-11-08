@@ -1,48 +1,39 @@
-# Stima della Generalized Tail Concentration Function
+# Simulazioni Monte Carlo per la stima della GTCF
 
-Codice R della tesi magistrale di **Massimo Gatti**, *Stima della Generalized Tail Concentration Function: un confronto Monte Carlo tra PIT teorici e ranghi campionari* (Economia e finanza, Università degli Studi di Milano-Bicocca; relatore: Prof. Lucio De Capitani).
+Qui ho raccolto i tre script R che ho usato nella tesi. Per ogni campione simulato stimo i parametri α e c della *Generalized Tail Concentration Function* in due modi: prima uso le distribuzioni marginali note per ottenere i PIT teorici, poi ripeto la stima usando soltanto i ranghi delle osservazioni. Confronto i risultati separatamente per la coda inferiore e per quella superiore.
 
-Il lavoro confronta due modi di stimare la dipendenza di coda a partire dalle stesse osservazioni simulate: applicare le funzioni di ripartizione marginali vere (PIT teorici) oppure costruire pseudo-osservazioni dai ranghi campionari. Il Capitolo 2 descrive il metodo e il Capitolo 3 presenta i risultati.
+## Come leggere il codice
 
-## Quale script eseguire
+Ho scritto uno script per ciascuna copula: [gaussiana](MC_Gaussiana.R), [Clayton](MC_Clayton.R) e [Gumbel](MC_Gumbel.R). Ogni script genera i propri dati e si può eseguire da solo. Ho mantenuto la stessa numerazione delle sezioni in tutti e tre, così è facile ritrovare uno stesso passaggio:
 
-I tre script sono autonomi: ciascuno genera i dati, stima i parametri nelle due code e salva i risultati della propria copula. Non richiedono dati esterni né un ordine di esecuzione.
+| Sezioni | Contenuto |
+| --- | --- |
+| 1–3 | Generazione del campione, costruzione dei PIT e dei ranghi, scelta delle soglie. |
+| 4–5 | Calcolo delle frequenze di coda e stima di α e c mediante regressione log–log. |
+| 6–8 | Applicazione ai sottocampioni ed esecuzione delle 1.000 repliche per ciascun valore del tau di Kendall. |
+| 9–10 | Riepiloghi per singola base e confronto tra PIT e ranghi sulle repliche valide per entrambi i metodi. |
+| 11–12 | Costruzione dei grafici e salvataggio dei risultati. |
 
-| Script | Copula | Risultati |
-| --- | --- | --- |
-| [MC_Gaussiana.R](MC_Gaussiana.R) | Gaussiana | 4 CSV; per il coefficiente `c` il confronto riguarda media e varianza sulla finestra, senza bias o MSE rispetto a un valore asintotico positivo. |
-| [MC_Clayton.R](MC_Clayton.R) | Clayton | 3 CSV con riepiloghi per parametro e confronto appaiato tra PIT teorici e ranghi. |
-| [MC_Gumbel.R](MC_Gumbel.R) | Gumbel | 3 CSV con gli stessi tipi di riepilogo e confronto utilizzati per Clayton. |
+Nel codice, la sigla `IID` indica i PIT teorici. Per seguire il confronto discusso nel capitolo 3, il passaggio centrale è la sezione 10: è qui che affianco le stime ottenute dalle stesse osservazioni nella stessa replica.
 
-## Esecuzione
+## Come eseguire una simulazione
 
-Servono R e i pacchetti `dplyr`, `tidyr`, `ggplot2` e `scales`. Per installarli, dalla console R:
+Dalla console di R si possono installare i pacchetti necessari:
 
 ```r
 install.packages(c("dplyr", "tidyr", "ggplot2", "scales"))
 ```
 
-Dopo aver scaricato la repository, aprire un terminale nella cartella che contiene i tre file ed eseguire lo script desiderato, ad esempio:
+Per riprodurre, ad esempio, i risultati di Clayton, basta aprire un terminale nella cartella dei tre script ed eseguire:
 
 ```sh
 Rscript --vanilla MC_Clayton.R
 ```
 
-In alternativa, in RStudio aprire una nuova sessione, impostare la stessa cartella come directory di lavoro ed eseguire lo script dall'inizio alla fine. Ogni script inizia con `rm(list = ls())`. Per l'esportazione dei PDF viene usato il dispositivo grafico Cairo di R (verificabile con `capabilities("cairo")`).
+In RStudio conviene partire da una sessione vuota: ogni script cancella gli oggetti presenti nell’ambiente di lavoro e fissa il seme a 44. Una volta impostata come directory di lavoro la cartella degli script, si può eseguire l’intero file con **Source**. Per esportare i PDF serve il supporto Cairo di R, verificabile con `capabilities("cairo")`.
 
-## Disegno Monte Carlo
+## Dove trovare i risultati
 
-- Tre valori del tau di Kendall: 0,20, 1/3 e 0,50. Per ogni copula e valore di tau si eseguono 1.000 repliche. Ogni script fissa il seme a 44 all'avvio.
-- In ogni replica si genera un campione di 100.000 coppie e se ne prendono le prime 5.000, 10.000, 20.000, 50.000 e 100.000. I ranghi vengono ricalcolati per ciascun sottocampione.
-- Per ogni coda si usano 20 soglie equidistanti su una finestra dinamica con esponente 0,25. La regressione log–log delle frequenze empiriche fornisce le stime di α e c.
-- I confronti tra le due basi utilizzano, per ciascun parametro, soltanto le repliche valide per entrambe. Nel codice e in alcuni nomi di file, `IID` indica i PIT teorici.
+Per Clayton, lo script salva tabelle e grafici in `output/Clayton/Monte Carlo Clayton/`; per le altre copule cambia il nome della famiglia nel percorso. Ogni cartella contiene i riepiloghi in CSV, 14 grafici in PNG e PDF e un unico PDF che li raccoglie tutti.
 
-## Dove trovare gli output
-
-Ogni script crea la propria cartella, relativa alla directory di lavoro:
-
-- `output/Gaussiana/Monte Carlo Gaussiana/`
-- `output/Clayton/Monte Carlo Clayton/`
-- `output/Gumbel/Monte Carlo Gumbel/`
-
-Oltre ai CSV, ogni script salva 14 grafici sia in PNG sia in PDF vettoriale e un PDF multipagina che li raccoglie. Una nuova esecuzione nella stessa cartella sovrascrive i file omonimi. Gli output si generano localmente e non sono inclusi nella repository.
+Per il confronto tra i due metodi, il file da aprire è quello con `Confronto_Basi` nel nome. Per Clayton e Gumbel contiene entrambi i parametri. Per la gaussiana ho separato i risultati: `MonteCarlo_Confronto_Basi_Gaussiana.csv` riguarda α, mentre `MonteCarlo_Confronto_Basi_GTCF_Gaussiana.csv` riguarda c. Per quest’ultimo confronto riporto media e varianza: c descrive l’approssimazione sulla finestra di stima e non ha un valore asintotico positivo rispetto al quale calcolare il bias e l’MSE.
